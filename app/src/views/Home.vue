@@ -1,12 +1,31 @@
 <template>
-  <div class="home"></div>
+  <div class="home">
+    <Carousel class="carousel">
+      <Slide>
+        <div>
+          <p>Hello</p>
+        </div>
+      </Slide>
+    </Carousel>
+  </div>
 </template>
 
 <script>
-  // @ is an alias to /src
+  import Carousel from '../components/Carousel.vue';
+  import Slide from '../components/Slide.vue';
 
   export default {
     name: 'Home',
-    components: {},
+    components: {
+      Carousel,
+      Slide,
+    },
   };
 </script>
+
+<style lang="scss" scoped>
+  .carousel {
+    max-height: 100vh;
+    height: 100vh;
+  }
+</style>
