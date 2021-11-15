@@ -1,7 +1,7 @@
 <template>
   <div class="carousel">
     <slot :currentSlide="currentSlide" />
-    <div class="navigate">
+    <div v-if="navigationEnabled" class="navigate">
       <div class="toggle-page left">
         <i @click="prevSlide()" class="fas fa-chevron-left"></i>
       </div>
@@ -9,7 +9,7 @@
         <i @click="nextSlide()" class="fas fa-chevron-right"></i>
       </div>
     </div>
-    <div class="pagination">
+    <div v-if="paginationEnabled" class="pagination">
       <span
         v-for="(slide, index) in getSlideCount"
         :key="index"
@@ -24,9 +24,27 @@
 <script>
   import { ref, onMounted } from 'vue';
   export default {
-    setup() {
+    props: {
+      startAutoPlay: Boolean,
+      timeout: Number,
+      navigation: Boolean,
+      pagination: Boolean,
+    },
+    setup(props) {
       const currentSlide = ref(1);
       const getSlideCount = ref(null);
+      const autoPlayEnabled = ref(
+        props.startAutoPlay !== undefined ? props.startAutoPlay : true,
+      );
+      const timeoutDuration = ref(
+        props.timeout !== undefined ? props.timeout : 4000,
+      );
+      const paginationEnabled = ref(
+        props.pagination !== undefined ? props.pagination : true,
+      );
+      const navigationEnabled = ref(
+        props.navigation !== undefined ? props.navigation : true,
+      );
 
       const nextSlide = () => {
         if (currentSlide.value === getSlideCount.value) {
@@ -46,15 +64,27 @@
         currentSlide.value = index + 1;
       };
 
-      setInterval(() => {
-        nextSlide();
-      }, 5000);
+      const autoPlay = () => {
+        setInterval(() => {
+          nextSlide();
+        }, timeoutDuration.value);
+      };
+
+      if (autoPlayEnabled.value) autoPlay();
 
       onMounted(() => {
         getSlideCount.value = document.querySelectorAll('.slide').length;
       });
 
-      return { currentSlide, nextSlide, prevSlide, getSlideCount, goToSlide };
+      return {
+        currentSlide,
+        nextSlide,
+        prevSlide,
+        getSlideCount,
+        goToSlide,
+        paginationEnabled,
+        navigationEnabled,
+      };
     },
   };
 </script>
